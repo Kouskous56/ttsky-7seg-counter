@@ -1,6 +1,6 @@
 `default_nettype none
 
-module tt_um_example (
+module tt_um_kouskos56_seg7 (
     input  wire [7:0] ui_in,    // ui_in[1:0] speed, ui_in[2] direction, ui_in[3] pause
     output wire [7:0] uo_out,   // uo_out[6:0] segments, uo_out[7] dp
     input  wire [7:0] uio_in,   // unused

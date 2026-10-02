@@ -1,12 +1,12 @@
-# Sample testbench for a Tiny Tapeout project
+# Testbench for the 7-segment BCD counter (tt_um_kouskos56_seg7)
 
-This is a sample testbench for a Tiny Tapeout project. It uses [cocotb](https://docs.cocotb.org/en/stable/) to drive the DUT and check the outputs.
+7 cocotb tests drive the DUT and check the outputs: reset shows 0, count up, down wrap 0->9->...->0->1, pause freeze + dp, ena gating, slowest speed no early tick, uio pins contention-free. Run: `make -B` (needs cocotb, see requirements.txt).
 See below to get started or for more information, check the [website](https://tinytapeout.com/hdl/testing/).
 
 ## Setting up
 
 1. Edit [Makefile](Makefile) and modify `PROJECT_SOURCES` to point to your Verilog files.
-2. Edit [tb.v](tb.v) and replace `tt_um_example` with your module name.
+2. Edit [tb.v](tb.v) and replace `tt_um_kouskos56_seg7` with your module name.
 
 ## How to run
 
