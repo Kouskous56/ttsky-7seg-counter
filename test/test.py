@@ -145,3 +145,30 @@ async def test_uio_pins_contention_free(dut):
     assert int(dut.uio_out.value) == 0x00, (
         f"uio_out must be 0, got {int(dut.uio_out.value):02X}"
     )
+
+
+@cocotb.test()
+async def test_speed_increase_not_skipped(dut):
+    """Jumping slowest -> fastest must advance the digit, not freeze it.
+
+    Regression: `prescale == terminal` compares against a terminal count that
+    is muxed by speed, so raising the speed while the prescaler has already
+    counted past the new terminal skips it entirely until the 24-bit counter
+    wraps (~0.5 s of frozen display on the board).
+    """
+    await init(dut)
+    dut.ui_in.value = SW_UP  # speed 00, count up
+    # Park the prescaler well above the fastest terminal count (2^18 - 1).
+    await ClockCycles(dut.clk, 4 * TICK)
+    assert seg_value(dut) == SEG[0], (
+        f"preset stage should not have ticked, got {seg_value(dut):02X}"
+    )
+
+    dut.ui_in.value = SW_SPEED | SW_UP  # flip to fastest mid-period
+    for _ in range(TICK + SLACK):
+        await RisingEdge(dut.clk)
+        if seg_value(dut) != SEG[0]:
+            break
+    assert seg_value(dut) != SEG[0], (
+        "display frozen for a whole fastest period after a speed increase"
+    )

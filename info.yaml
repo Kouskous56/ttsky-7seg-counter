@@ -2,7 +2,7 @@ project:
   title: 7-Segment Counter
   author: Khoa
   discord: ''
-  description: 'BCD counter 0-9 on the onboard 7-segment display: 4 switchable counting speeds, up/down direction, pause with dp indicator. Clock 50MHz.'
+  description: 'BCD counter 0-9 on the onboard 7-segment display: 4 switchable counting speeds (f_clk/2^k, k = 18..24), up/down direction, pause with dp indicator. Pure divider, runs at any clock up to the 50MHz it is timing-closed at.'
   language: Verilog
   clock_hz: 50000000
   tiles: 1x1
@@ -10,7 +10,7 @@ project:
   source_files:
   - tt_um_kouskos56_seg7.v
 pinout:
-  ui[0]: 'Speed select bit 0 (00=slowest ~3Hz, 11=fastest ~190Hz)'
+  ui[0]: 'Speed select bit 0 (00=slowest f/2^24, 11=fastest f/2^18)'
   ui[1]: 'Speed select bit 1'
   ui[2]: 'Direction (0=down, 1=up)'
   ui[3]: 'Pause (1=hold count, dp lights)'

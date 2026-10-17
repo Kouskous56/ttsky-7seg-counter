@@ -13,8 +13,9 @@ module tt_um_kouskos56_seg7 (
 
     // ------------------------------------------------------------------
     // Controls
-    //   ui_in[1:0] speed  : 00 = div 2^24 (~3Hz), 01 = div 2^22 (~12Hz),
-    //                       10 = div 2^20 (~48Hz), 11 = div 2^18 (~190Hz @50MHz)
+    //   ui_in[1:0] speed  : 00 = div 2^24, 01 = div 2^22, 10 = div 2^20,
+    //                       11 = div 2^18  -> f_tick = f_clk / 2^k
+    //                       (1.5 Hz .. 95 Hz at 25 MHz, 3 Hz .. 191 Hz at 50 MHz)
     //   ui_in[2]   up     : 0 = count down, 1 = count up
     //   ui_in[3]   pause  : 1 = hold the count (dp lights up)
     // ------------------------------------------------------------------
@@ -32,7 +33,10 @@ module tt_um_kouskos56_seg7 (
                       (speed == 2'b01) ? 24'h3F_FFFF : // 2^22 - 1
                       (speed == 2'b10) ? 24'h0F_FFFF : // 2^20 - 1
                                          24'h03_FFFF;  // 2^18 - 1
-    wire tick = (prescale == terminal);
+    //   >= not ==: `terminal` is muxed by speed, so a switch to a faster
+    //   speed can leave `prescale` past its new terminal, and == then misses
+    //   until the 24-bit wrap (up to ~0.5 s of frozen display on the board).
+    wire tick = (prescale >= terminal);
 
     always @(posedge clk) begin
         if (!rst_n)

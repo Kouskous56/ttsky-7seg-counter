@@ -1,21 +1,33 @@
 ## How it works
 
 This project is a 7-segment **BCD counter** (0-9) for the Tiny Tapeout
-demo board. All logic lives on one synchronous clock (`clk`, 50 MHz).
+demo board. All logic lives on one synchronous clock (`clk`). The design
+is a pure divider, so it is **clock-rate agnostic**: only the wall-clock
+speed of the digits changes with `clk`.
 
 The datapath has three stages:
 
 1. **Prescaler / clock divider** — a 24-bit counter with a per-speed
    terminal count produces a single-cycle *tick* pulse (the
    clock-enable pattern, so the counter itself never sees a divided
-   clock). The tick frequency is selected by `ui_in[1:0]`:
+   clock). The tick frequency is \(f_{tick} = f_{clk} / 2^{k}\), with
+   `k` selected by `ui_in[1:0]`:
 
-   | ui_in[1:0] | Division | Tick rate @50MHz |
-   |------------|----------|------------------|
-   | 00         | 2^24     | ~3 Hz (slowest)  |
-   | 01         | 2^22     | ~12 Hz           |
-   | 10         | 2^20     | ~48 Hz           |
-   | 11         | 2^18     | ~190 Hz (fastest)|
+   | ui_in[1:0] | Division | \(f_{tick}\) @25MHz | \(f_{tick}\) @50MHz |
+   |------------|----------|--------------------|--------------------|
+   | 00         | 2^24     | 1.5 Hz (slowest)   | 3.0 Hz             |
+   | 01         | 2^22     | 6.0 Hz             | 11.9 Hz            |
+   | 10         | 2^20     | 23.8 Hz            | 47.7 Hz            |
+   | 11         | 2^18     | 95.4 Hz (fastest)  | 190.7 Hz           |
+
+   The demo board oscillator and the FPGA build may differ, so read the
+   rate off the column that matches your clock source.
+
+   Raising `ui_in[1:0]` to a faster speed takes effect on the **next
+   cycle** even if the prescaler is already past the new terminal count
+   (`prescale >= terminal`), at the cost of at most one early tick. With
+   a plain `==` compare the terminal gets skipped and the display freezes
+   until the 24-bit counter wraps — up to ~0.5 s at 25 MHz.
 
 2. **BCD counter** — counts on every tick from 0 to 9 and wraps.
    `ui_in[2]` selects the direction: 0 counts down (0 -> 9 -> 8 ...),
@@ -36,15 +48,20 @@ as inputs) and `uio_in` is tied off.
 With `rst_n` released (and `ena` high), set the switches:
 
 1. Fastest counting: `ui_in[1:0] = 11` then watch `uo_out` cycle the
-   segment patterns 0x3F -> 0x06 -> 0x5B -> ... at ~190 Hz.
+   segment patterns 0x3F -> 0x06 -> 0x5B -> ... (95 Hz at 25 MHz,
+   191 Hz at 50 MHz).
 2. Count down: set `ui_in[2] = 0` (or up with `ui_in[2] = 1`) and
    verify the wrap 9 -> 0 (or 0 -> 9).
 3. Pause: set `ui_in[3] = 1` — the digit freezes and the dp turns on.
+4. Speed change: start on `ui_in[1:0] = 00`, wait a second, then jump
+   straight to `11` — the digits must start moving almost immediately,
+   not after the slowest divider finishes.
 
 The Cocotb test (`test/test.py`) covers all of this automatically:
 reset -> shows 0, count up 0-1-2-3, down wrap 0 -> 9 -> ... -> 0 -> 1,
-pause/freeze + dp, `ena=0` gating, and "slowest speed does not tick
-early" — 6 tests total.
+pause/freeze + dp, `ena=0` gating, "slowest speed does not tick
+early", `uio` contention-free, and "speed increase is not skipped" —
+8 tests total.
 
 ## External hardware
 
