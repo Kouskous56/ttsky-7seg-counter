@@ -22,7 +22,7 @@ TICK = 1 << 18
 SLACK = 8
 
 SW_SPEED = 0b11  # fastest
-SW_UP = 1 << 2  # ui_in[2] = 1 -> count up (0 -> count down)
+SW_UP = 1 << 2  # ui_in[2] = 1 -> count up
 SW_DOWN = 0  # ui_in[2] = 0 -> count down
 SW_PAUSE = 1 << 3
 

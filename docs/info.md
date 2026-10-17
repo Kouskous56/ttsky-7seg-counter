@@ -10,15 +10,15 @@ The datapath has three stages:
 1. **Prescaler / clock divider** — a 24-bit counter with a per-speed
    terminal count produces a single-cycle *tick* pulse (the
    clock-enable pattern, so the counter itself never sees a divided
-   clock). The tick frequency is \(f_{tick} = f_{clk} / 2^{k}\), with
-   `k` selected by `ui_in[1:0]`:
+   clock). The tick rate is `f_tick = f_clk / 2^k`, with `k` selected
+   by `ui_in[1:0]`:
 
-   | ui_in[1:0] | Division | \(f_{tick}\) @25MHz | \(f_{tick}\) @50MHz |
-   |------------|----------|--------------------|--------------------|
-   | 00         | 2^24     | 1.5 Hz (slowest)   | 3.0 Hz             |
-   | 01         | 2^22     | 6.0 Hz             | 11.9 Hz            |
-   | 10         | 2^20     | 23.8 Hz            | 47.7 Hz            |
-   | 11         | 2^18     | 95.4 Hz (fastest)  | 190.7 Hz           |
+   | ui_in[1:0] | Division | k  | Tick @25MHz | Tick @50MHz |
+   |------------|----------|----|-------------|-------------|
+   | 00         | 2^24     | 24 | 1.5 Hz (slowest) | 3.0 Hz   |
+   | 01         | 2^22     | 22 | 6.0 Hz      | 11.9 Hz     |
+   | 10         | 2^20     | 20 | 23.8 Hz     | 47.7 Hz     |
+   | 11         | 2^18     | 18 | 95.4 Hz (fastest) | 190.7 Hz |
 
    The demo board oscillator and the FPGA build may differ, so read the
    rate off the column that matches your clock source.

@@ -1,6 +1,6 @@
 # Testbench for the 7-segment BCD counter (tt_um_kouskos56_seg7)
 
-7 cocotb tests drive the DUT and check the outputs: reset shows 0, count up, down wrap 0->9->...->0->1, pause freeze + dp, ena gating, slowest speed no early tick, uio pins contention-free. Run: `make -B` (needs cocotb, see requirements.txt).
+The cocotb tests in [test.py](test.py) drive the DUT and check the outputs: reset shows 0, count up, down wrap 0->9->...->0->1, pause freeze + dp, ena gating, slowest speed no early tick, uio pins contention-free, and speed increase not skipped (regression for the `prescale >= terminal` fix). Run: `make -B` (needs cocotb, see requirements.txt).
 See below to get started or for more information, check the [website](https://tinytapeout.com/hdl/testing/).
 
 ## Setting up
