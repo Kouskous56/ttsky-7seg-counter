@@ -20,14 +20,17 @@ The datapath has three stages:
    | 10         | 2^20     | 20 | 23.8 Hz     | 47.7 Hz     |
    | 11         | 2^18     | 18 | 95.4 Hz (fastest) | 190.7 Hz |
 
-   The demo board oscillator and the FPGA build may differ, so read the
-   rate off the column that matches your clock source.
+   Read the rate off the column that matches the clock you actually have.
+   The `fpga` workflow constrains the ICE40UP5K build to 12 MHz, where the
+   same `k` values give 0.7 Hz .. 45.8 Hz.
 
    Raising `ui_in[1:0]` to a faster speed takes effect on the **next
    cycle** even if the prescaler is already past the new terminal count
    (`prescale >= terminal`), at the cost of at most one early tick. With
    a plain `==` compare the terminal gets skipped and the display freezes
-   until the 24-bit counter wraps — up to ~0.5 s at 25 MHz.
+   until the 24-bit counter wraps and re-reaches the new terminal, so the
+   stall is up to a full slowest period: 2^24-1 cycles ≈ 0.67 s at
+   25 MHz (0.34 s at 50 MHz).
 
 2. **BCD counter** — counts on every tick from 0 to 9 and wraps.
    `ui_in[2]` selects the direction: 0 counts down (0 -> 9 -> 8 ...),

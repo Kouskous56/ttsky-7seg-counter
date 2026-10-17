@@ -3,8 +3,8 @@
 # 7-Segment BCD Counter (TinyTapeout)
 
 0–9 BCD counter on the onboard 7-segment display: prescaler with 4 switchable
-speeds (`f_tick = f_clk / 2^k`, k = 18…24 — 95 Hz to 1.5 Hz on a 25 MHz board
-clock), up/down direction, pause with dp indicator. Pure divider, so it is
+speeds (`f_tick = f_clk / 2^k`, k = 18…24 — one tick every 262 k to 16.7 M
+clocks), up/down direction, pause with dp indicator. Pure divider, so it is
 clock-rate agnostic. Verilog, 8/8 cocotb tests green at RTL *and* gate level,
 LibreLane signoff clean.
 
