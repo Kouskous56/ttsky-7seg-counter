@@ -154,7 +154,8 @@ async def test_speed_increase_not_skipped(dut):
     Regression: `prescale == terminal` compares against a terminal count that
     is muxed by speed, so raising the speed while the prescaler has already
     counted past the new terminal skips it entirely until the 24-bit counter
-    wraps (~0.5 s of frozen display on the board).
+    wraps and re-reaches it: up to 2^24-1 cycles, which is 0.67 s at the demo
+    board's 25 MHz and 0.34 s at the 50 MHz this testbench drives.
     """
     await init(dut)
     dut.ui_in.value = SW_UP  # speed 00, count up
