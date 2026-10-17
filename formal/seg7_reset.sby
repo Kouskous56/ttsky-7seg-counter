@@ -1,0 +1,27 @@
+# ---------------------------------------------------------------------------
+# Shipped RTL, reset forced at step 0. The reachable-state build.
+#
+#   cd <repo root>
+#   <oss-cad-suite>/environment.bat   (puts yosys+sby first on PATH)
+#   sby -f formal/seg7_reset.sby
+#
+# Expectation: DONE (rc=0).
+# ---------------------------------------------------------------------------
+
+[tasks]
+reset
+
+[options]
+mode prove
+depth 4
+
+[engines]
+smtbmc bitwuzla
+
+[script]
+read_verilog -sv -formal -DSEG7_SKIP_DECODE -I. tt_um_kouskos56_seg7.v
+prep -top tt_um_kouskos56_seg7 -flatten
+
+[files]
+tt_um_kouskos56_seg7.v src/tt_um_kouskos56_seg7.v
+seg7_props.svh formal/seg7_props.svh

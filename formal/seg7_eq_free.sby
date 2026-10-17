@@ -1,0 +1,30 @@
+# ---------------------------------------------------------------------------
+# Negative control, free initial state. THE regression proof: this build fails
+# on the pre-fix design and passes on the shipped one, at depth 0, with no
+# width reduction and no testbench.
+#
+#   cd <repo root>
+#   <oss-cad-suite>/environment.bat   (puts yosys+sby first on PATH)
+#   sby -f formal/seg7_eq_free.sby
+#
+# Expectation: FAIL (rc=2) on P1 and P2. Keep an expectation of failure: this
+# file is the differential check that formal/seg7_props.svh is not decoration.
+# ---------------------------------------------------------------------------
+
+[tasks]
+eq_free
+
+[options]
+mode prove
+depth 4
+
+[engines]
+smtbmc bitwuzla
+
+[script]
+read_verilog -sv -formal -DSEG7_FREE_INIT -DSEG7_SKIP_DECODE -I. tt_um_kouskos56_seg7_eq.v
+prep -top tt_um_kouskos56_seg7 -flatten
+
+[files]
+tt_um_kouskos56_seg7_eq.v formal/negative_control/tt_um_kouskos56_seg7_eq.v
+seg7_props.svh formal/seg7_props.svh

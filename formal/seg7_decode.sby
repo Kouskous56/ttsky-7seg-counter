@@ -1,0 +1,37 @@
+# ---------------------------------------------------------------------------
+# P5s: exhaustive check of the 7-segment decoder, on its own.
+#
+#   cd <repo root>
+#   <oss-cad-suite>/environment.bat   (puts yosys+sby first on PATH)
+#   sby -f formal/seg7_decode.sby
+#
+# mode bmc + SEG7_FREE_INIT means `value` is unconstrained at step 0, so this
+# one run covers all 16 four-bit encodings of the decoder -- the ten valid
+# digits are asserted against the table, and the six unreachable ones are gated
+# off by `value <= 4'd9`. depth 1 is enough because the decoder is combinational
+# in `value`; there is no counter state to unroll.
+#
+# Why this is not part of seg7_free.sby: Yosys infers the `case` decoder as a
+# ROM and makes its don't-care entries free `$anyseq` inputs, which stops the
+# equality from being inductive. See the P5s comment in seg7_props.svh.
+#
+# Expectation: DONE (PASS, rc=0).
+# ---------------------------------------------------------------------------
+
+[tasks]
+decode
+
+[options]
+mode bmc
+depth 1
+
+[engines]
+smtbmc bitwuzla
+
+[script]
+read_verilog -sv -formal -DSEG7_FREE_INIT -I. tt_um_kouskos56_seg7.v
+prep -top tt_um_kouskos56_seg7 -flatten
+
+[files]
+tt_um_kouskos56_seg7.v src/tt_um_kouskos56_seg7.v
+seg7_props.svh formal/seg7_props.svh

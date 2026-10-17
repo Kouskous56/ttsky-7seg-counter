@@ -1,0 +1,28 @@
+# ---------------------------------------------------------------------------
+# Shipped RTL, initial state left free. Every 2^24 counter value is a starting
+# point, so P1/P2 are exhaustive rather than tautological.
+#
+#   cd <repo root>
+#   <oss-cad-suite>/environment.bat   (puts yosys+sby first on PATH)
+#   sby -f formal/seg7_free.sby
+#
+# Expectation: DONE (rc=0).
+# ---------------------------------------------------------------------------
+
+[tasks]
+free
+
+[options]
+mode prove
+depth 4
+
+[engines]
+smtbmc bitwuzla
+
+[script]
+read_verilog -sv -formal -DSEG7_FREE_INIT -DSEG7_SKIP_DECODE -I. tt_um_kouskos56_seg7.v
+prep -top tt_um_kouskos56_seg7 -flatten
+
+[files]
+tt_um_kouskos56_seg7.v src/tt_um_kouskos56_seg7.v
+seg7_props.svh formal/seg7_props.svh

@@ -35,7 +35,8 @@ module tt_um_kouskos56_seg7 (
                                          24'h03_FFFF;  // 2^18 - 1
     //   >= not ==: `terminal` is muxed by speed, so a switch to a faster
     //   speed can leave `prescale` past its new terminal, and == then misses
-    //   until the 24-bit wrap (up to ~0.5 s of frozen display on the board).
+    //   until the 24-bit counter wraps and re-reaches the new terminal -- a
+    //   stall of up to 2^24-1 cycles (~0.67 s at 25 MHz) of frozen display.
     wire tick = (prescale >= terminal);
 
     always @(posedge clk) begin
@@ -87,5 +88,9 @@ module tt_um_kouskos56_seg7 (
     assign uio_oe      = 8'd0;
 
     wire _unused = &{uio_in, ui_in[7:4], 1'b0};
+
+`ifdef FORMAL
+    `include "seg7_props.svh"
+`endif
 
 endmodule

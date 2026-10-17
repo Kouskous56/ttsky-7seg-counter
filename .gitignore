@@ -13,3 +13,12 @@ test/results.xml
 test/gate_level_netlist.v
 /tt/
 tt/
+
+# SymbiYosys output: generated models, engine dirs, traces, transcripts.
+# Keep the inputs (.sby, .svh) and formal/README.md.
+/formal/seg7_*
+!/formal/seg7_*.sby
+!/formal/seg7_props.svh
+
+# tools/datasheet_preview.py output
+/build/
