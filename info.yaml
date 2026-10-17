@@ -6,9 +6,9 @@ project:
   language: Verilog
   clock_hz: 50000000
   tiles: 1x1
-  top_module: tt_um_example
+  top_module: tt_um_kouskos56_seg7
   source_files:
-  - project.v
+  - tt_um_kouskos56_seg7.v
 pinout:
   ui[0]: 'Speed select bit 0 (00=slowest ~3Hz, 11=fastest ~190Hz)'
   ui[1]: 'Speed select bit 1'

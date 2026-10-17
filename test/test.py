@@ -131,3 +131,17 @@ async def test_slowest_speed_no_early_tick(dut):
     assert seg_value(dut) == SEG[0], (
         f"slowest speed ticked too early, got {seg_value(dut):02X}"
     )
+
+
+@cocotb.test()
+async def test_uio_pins_contention_free(dut):
+    """uio stays inputs (oe=0, out=0): flags never loop back into inputs."""
+    await init(dut)
+    dut.ui_in.value = SW_SPEED | SW_UP
+    await ClockCycles(dut.clk, TICK + SLACK)
+    assert int(dut.uio_oe.value) == 0x00, (
+        f"uio_oe must be 0, got {int(dut.uio_oe.value):02X}"
+    )
+    assert int(dut.uio_out.value) == 0x00, (
+        f"uio_out must be 0, got {int(dut.uio_out.value):02X}"
+    )
